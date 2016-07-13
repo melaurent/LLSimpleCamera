@@ -258,7 +258,7 @@
 				TargetAttributes = {
 					17E4C47E1A0122A700E61ACD = {
 						CreatedOnToolsVersion = 6.0.1;
-						DevelopmentTeam = NZPAC7Q696;
+						DevelopmentTeam = JV465ZL462;
 					};
 					17E4C4971A0122A700E61ACD = {
 						CreatedOnToolsVersion = 6.0.1;
@@ -445,6 +445,7 @@
 				INFOPLIST_FILE = LLSimpleCameraExample/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.omerfarukgul.LLSimpleCameraExampleLmeunier;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 			};
@@ -459,6 +460,7 @@
 				INFOPLIST_FILE = LLSimpleCameraExample/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.omerfarukgul.LLSimpleCameraExampleLmeunier;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 			};

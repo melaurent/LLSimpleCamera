@@ -288,6 +288,7 @@ NSString *const LLSimpleCameraErrorDomain = @"LLSimpleCameraErrorDomain";
 {
     [self.session stopRunning];
     self.session = nil;
+    //[self.captureVideoPreviewLayer removeFromSuperlayer];
 }
 
 
