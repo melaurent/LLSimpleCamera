@@ -199,6 +199,10 @@ NSString *const LLSimpleCameraErrorDomain = @"LLSimpleCameraErrorDomain";
         _session.automaticallyConfiguresApplicationAudioSession = NO;
         // preview layer
         CGRect bounds = self.preview.layer.bounds;
+        for (CALayer *layer in [self.preview.layer sublayers])
+        {
+            [layer removeFromSuperlayer];
+        }
         _captureVideoPreviewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:self.session];
         _captureVideoPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
         _captureVideoPreviewLayer.bounds = bounds;
@@ -274,6 +278,7 @@ NSString *const LLSimpleCameraErrorDomain = @"LLSimpleCameraErrorDomain";
         NSDictionary *outputSettings = [[NSDictionary alloc] initWithObjectsAndKeys: AVVideoCodecJPEG, AVVideoCodecKey, nil];
         [self.stillImageOutput setOutputSettings:outputSettings];
         [self.session addOutput:self.stillImageOutput];
+        [self setMirror:_mirror];
     }
 
     //if we had disabled the connection on capture, re-enable it
@@ -288,7 +293,6 @@ NSString *const LLSimpleCameraErrorDomain = @"LLSimpleCameraErrorDomain";
 {
     [self.session stopRunning];
     self.session = nil;
-    //[self.captureVideoPreviewLayer removeFromSuperlayer];
 }
 
 
