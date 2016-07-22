@@ -25,6 +25,7 @@
 @property (strong, nonatomic) CAAnimation *focusBoxAnimation;
 @property (strong, nonatomic) AVCaptureMovieFileOutput *movieFileOutput;
 @property (strong, nonatomic) UIPinchGestureRecognizer *pinchGesture;
+@property (strong, nonatomic) dispatch_queue_t queue;
 @property (nonatomic, assign) CGFloat beginGestureScale;
 @property (nonatomic, assign) CGFloat effectiveScale;
 @property (nonatomic, copy) void (^didRecordCompletionBlock)(LLSimpleCamera *camera, NSURL *outputFileUrl, NSError *error);
@@ -52,7 +53,7 @@ NSString *const LLSimpleCameraErrorDomain = @"LLSimpleCameraErrorDomain";
     if(self) {
         [self setupWithQuality:quality position:position videoEnabled:videoEnabled];
     }
-
+    self.queue = dispatch_queue_create("io.filantrop.CameraQueue", NULL);
     return self;
 }
 
@@ -630,41 +631,45 @@ NSString *const LLSimpleCameraErrorDomain = @"LLSimpleCameraErrorDomain";
         return;
     }
 
-    [self.session beginConfiguration];
+    dispatch_async(self.queue, ^{
+        
+    
+        [self.session beginConfiguration];
 
-    // remove existing input
-    [self.session removeInput:self.videoDeviceInput];
+        // remove existing input
+        [self.session removeInput:self.videoDeviceInput];
 
-    // get new input
-    AVCaptureDevice *device = nil;
-    if(self.videoDeviceInput.device.position == AVCaptureDevicePositionBack) {
-        device = [self cameraWithPosition:AVCaptureDevicePositionFront];
-    } else {
-        device = [self cameraWithPosition:AVCaptureDevicePositionBack];
-    }
+        // get new input
+        AVCaptureDevice *device = nil;
+        if(self.videoDeviceInput.device.position == AVCaptureDevicePositionBack) {
+            device = [self cameraWithPosition:AVCaptureDevicePositionFront];
+        } else {
+            device = [self cameraWithPosition:AVCaptureDevicePositionBack];
+        }
 
-    if(!device) {
-        return;
-    }
+        if(!device) {
+            return;
+        }
 
-    // add input to session
-    NSError *error = nil;
-    AVCaptureDeviceInput *videoInput = [[AVCaptureDeviceInput alloc] initWithDevice:device error:&error];
-    if(error) {
-        [self passError:error];
+        // add input to session
+        NSError *error = nil;
+        AVCaptureDeviceInput *videoInput = [[AVCaptureDeviceInput alloc] initWithDevice:device error:&error];
+        if(error) {
+            [self passError:error];
+            [self.session commitConfiguration];
+            return;
+        }
+
+        _position = cameraPosition;
+
+        [self.session addInput:videoInput];
         [self.session commitConfiguration];
-        return;
-    }
 
-    _position = cameraPosition;
+        self.videoCaptureDevice = device;
+        self.videoDeviceInput = videoInput;
 
-    [self.session addInput:videoInput];
-    [self.session commitConfiguration];
-
-    self.videoCaptureDevice = device;
-    self.videoDeviceInput = videoInput;
-
-    [self setMirror:_mirror];
+        [self setMirror:_mirror];
+    });
 }
 
 
