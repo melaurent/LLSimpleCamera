@@ -65,6 +65,11 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) LLCameraFlash flash;
 
 /**
+ * Camera video duration.
+ */
+@property (nonatomic) double videoDuration;
+
+/**
  * Camera mirror mode.
  */
 @property (nonatomic) LLCameraMirror mirror;

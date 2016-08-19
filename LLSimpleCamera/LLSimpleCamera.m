@@ -82,6 +82,7 @@ NSString *const LLSimpleCameraErrorDomain = @"LLSimpleCameraErrorDomain";
     _recording = NO;
     _zoomingEnabled = YES;
     _effectiveScale = 1.0f;
+    _videoDuration = 6.0f;
 }
 
 - (void)viewDidLoad
@@ -260,6 +261,7 @@ NSString *const LLSimpleCameraErrorDomain = @"LLSimpleCameraErrorDomain";
             }
 
             _movieFileOutput = [[AVCaptureMovieFileOutput alloc] init];
+            _movieFileOutput.maxRecordedDuration = CMTimeMakeWithSeconds(_videoDuration, 30);
             [_movieFileOutput setMovieFragmentInterval:kCMTimeInvalid];
             if([self.session canAddOutput:_movieFileOutput]) {
                 [self.session addOutput:_movieFileOutput];
