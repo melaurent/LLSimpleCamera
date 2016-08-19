@@ -180,9 +180,7 @@ NSString *const LLSimpleCameraErrorDomain = @"LLSimpleCameraErrorDomain";
                 }];
             }
             else {
-                dispatch_async(self.queue, ^{
-                    [self initialize];
-                });
+                [self initialize];
             }
         }
         else {
@@ -206,12 +204,7 @@ NSString *const LLSimpleCameraErrorDomain = @"LLSimpleCameraErrorDomain";
         {
             [layer removeFromSuperlayer];
         }
-        _captureVideoPreviewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:self.session];
-        _captureVideoPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-        _captureVideoPreviewLayer.bounds = bounds;
-        _captureVideoPreviewLayer.position = CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds));
-        [self.preview.layer addSublayer:_captureVideoPreviewLayer];
-
+        
         AVCaptureDevicePosition devicePosition;
         switch (self.position) {
             case LLCameraPositionRear:
@@ -282,20 +275,40 @@ NSString *const LLSimpleCameraErrorDomain = @"LLSimpleCameraErrorDomain";
         [self.stillImageOutput setOutputSettings:outputSettings];
         [self.session addOutput:self.stillImageOutput];
         [self setMirror:_mirror];
-    }
+        //if we had disabled the connection on capture, re-enable it
+        if (![self.captureVideoPreviewLayer.connection isEnabled]) {
+            [self.captureVideoPreviewLayer.connection setEnabled:YES];
+        }
+        dispatch_async(self.queue, ^{
+            [self.session startRunning];
 
-    //if we had disabled the connection on capture, re-enable it
-    if (![self.captureVideoPreviewLayer.connection isEnabled]) {
-        [self.captureVideoPreviewLayer.connection setEnabled:YES];
-    }
+            _captureVideoPreviewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:self.session];
+            _captureVideoPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+            _captureVideoPreviewLayer.bounds = bounds;
+            _captureVideoPreviewLayer.position = CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds));
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.preview.layer addSublayer:_captureVideoPreviewLayer];
+            });
+        });
+    } else {
 
-    [self.session startRunning];
+        //if we had disabled the connection on capture, re-enable it
+        if (![self.captureVideoPreviewLayer.connection isEnabled]) {
+            [self.captureVideoPreviewLayer.connection setEnabled:YES];
+        }
+
+        dispatch_async(self.queue, ^{
+            [self.session startRunning];
+        });
+    }
 }
 
 - (void)stop
 {
-    [self.session stopRunning];
-    self.session = nil;
+    dispatch_async(self.queue, ^{
+        [self.session stopRunning];
+    });
+    //self.session = nil;
 }
 
 
