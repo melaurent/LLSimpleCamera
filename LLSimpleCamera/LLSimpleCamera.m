@@ -182,7 +182,7 @@ NSString *const LLSimpleCameraErrorDomain = @"LLSimpleCameraErrorDomain";
             else {
                 dispatch_async(self.queue, ^{
                     [self initialize];
-                })
+                });
             }
         }
         else {
